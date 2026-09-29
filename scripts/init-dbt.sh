@@ -21,11 +21,11 @@ then
   mkdir dbt/
 fi
 
-if [[ ! -d duckdb/ ]]
-then
-  echo "create dbt/ folder"
-  mkdir duckdb/
-fi
+# if [[ ! -d duckdb/ ]]
+# then
+#   echo "create dbt/ folder"
+#   mkdir duckdb/
+# fi
 
 cat <<EOF > ~/.dbt/profiles.yml
 ${DBT_PROFILE_NAME}:
@@ -33,7 +33,7 @@ ${DBT_PROFILE_NAME}:
   outputs:
     dev:
       type: duckdb
-      path: "${PROJECT_PATH}/duckdb/sandbox.duckdb"
+      path: "/tmp/sandbox.duckdb"
       schema: main
       threads: 4
 EOF
@@ -114,3 +114,7 @@ touch ${DBT_PROJECT_NAME}/models/bronze/bronze_${DBT_ENTITY}.sql
 dbt seed
 
 cd ..
+
+
+# generate dummy data
+uvx jafgen
