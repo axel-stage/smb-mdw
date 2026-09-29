@@ -1,0 +1,122 @@
+name: smb-mdw
+
+networks:
+  default:
+    name: smb-mdw-net
+
+volumes:
+  minio-vol:
+    driver: local
+
+  postgres-vol:
+    driver: local
+
+  dbt-vol:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/dbt
+
+services:
+  minio:
+    platform: linux/amd64
+    image: minio/minio:latest
+    container_name: minio
+    restart: unless-stopped
+    ports:
+      - 9000:9000
+      - 9001:9001
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - minio-vol:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  minio-init:
+    depends_on:
+      - minio
+    platform: linux/amd64
+    image: minio/minio:latest
+    container_name: minio-init
+    user: 0:0
+
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        until (mc alias set local http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD}) do echo '...waiting...' && sleep 3; done;
+        mc mb --ignore-existing local/${MINIO_BUCKET};
+        echo "MinIO bucket ready";
+
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres-vol:/var/lib/postgresql/data
+      - ./scripts/init-catalog.sql:/docker-entrypoint-initdb.d/init-catalog.sql:ro
+    ports:
+      - 5432:5432
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  dbt-duckdb:
+    platform: linux/amd64
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+    build:
+      context: .
+      dockerfile: docker/dbt.Dockerfile
+      args:
+        VERSION: ${VERSION:-0.1}
+        USERNAME: ${USERNAME:-dbtadmin}
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    # develop:
+    #   watch:
+    #     - action: sync
+    #       path: ${PWD}/dbt
+    #       target: /home/${USERNAME:-dbtadmin}/dbt
+    image: dbt-duckdb:${VERSION:-0.1}
+    container_name: dbt-duckdb
+    volumes:
+      - dbt-vol:/home/${USERNAME:-dbtadmin}/dbt
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_SCHEMA: ${POSTGRES_SCHEMA}
+
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET: ${MINIO_BUCKET}
+      MINIO_BUCKET_PREFIX: ${MINIO_BUCKET_PREFIX}
+    stdin_open: true
+    tty: true
