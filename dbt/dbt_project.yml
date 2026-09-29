@@ -1,0 +1,31 @@
+name: ducklake
+version: "0.1.0"
+config-version: 2
+profile: ducklake
+
+model-paths: ["ducklake/models"]
+analysis-paths: ["ducklake/analyses"]
+test-paths: ["ducklake/tests"]
+seed-paths: ["ducklake/seeds"]
+macro-paths: ["ducklake/macros"]
+snapshot-paths: ["ducklake/snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+  - "logs"
+
+models:
+  ducklake:
+
+    bronze:
+      +schema: bronze
+      +materialized: table
+
+    silver:
+      +schema: silver
+      +materialized: table
+
+    gold:
+      +schema: gold
+      +materialized: table

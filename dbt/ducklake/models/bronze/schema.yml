@@ -1,0 +1,13 @@
+version: 2
+
+models:
+
+  - name: bronze_customers
+    description: "Standardized customer data from the raw source."
+
+    columns:
+      - name: customer_id
+        description: "Unique customer identifier."
+        data_tests:
+          - not_null
+          - unique
