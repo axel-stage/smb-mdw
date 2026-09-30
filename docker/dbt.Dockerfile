@@ -23,6 +23,13 @@ RUN apt update && \
 # install uv
 COPY --from=ghcr.io/astral-sh/uv:0.12.19 /uv /uvx /bin/
 
+# install duckdb cli
+RUN curl -L https://github.com/duckdb/duckdb/releases/latest/download/duckdb_cli-linux-amd64.zip \
+    -o /tmp/duckdb.zip && \
+    unzip /tmp/duckdb.zip -d /usr/local/bin && \
+    chmod +x /usr/local/bin/duckdb && \
+    rm /tmp/duckdb.zip
+
 WORKDIR /home/${USERNAME}
 
 USER ${USERNAME}

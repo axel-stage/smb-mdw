@@ -120,3 +120,12 @@ services:
       MINIO_BUCKET_PREFIX: ${MINIO_BUCKET_PREFIX}
     stdin_open: true
     tty: true
+
+  duckdb-cli:
+    platform: linux/amd64
+    image: dbt-duckdb:${VERSION:-0.1}
+    container_name: duckdb-cli
+    env_file: .env
+    stdin_open: true
+    tty: true
+    entrypoint: ["duckdb"]
