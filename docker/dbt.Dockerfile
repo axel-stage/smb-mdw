@@ -56,4 +56,4 @@ ENV PATH="/home/${USERNAME}/.venv/bin:$PATH"
 
 WORKDIR /home/${USERNAME}/dbt
 
-COPY . .
+COPY dbt/ .
