@@ -1,6 +1,7 @@
 # project
 #########
-jaffle-data/
+data/
+design/
 
 .env
 .env.*
