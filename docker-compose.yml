@@ -18,6 +18,20 @@ volumes:
       o: bind
       device: ${PWD}/dbt
 
+  data-vol:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/data
+
+  etl-vol:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/etl
+
 services:
   minio:
     platform: linux/amd64
@@ -126,6 +140,9 @@ services:
     image: dbt-duckdb:${VERSION:-0.1}
     container_name: duckdb-cli
     env_file: .env
+    volumes:
+      - data-vol:/home/${USERNAME:-dbtadmin}/data
+      - etl-vol:/home/${USERNAME:-dbtadmin}/etl
     stdin_open: true
     tty: true
     entrypoint: ["duckdb"]
