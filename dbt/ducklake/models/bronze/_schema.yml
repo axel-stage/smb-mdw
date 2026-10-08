@@ -1,0 +1,59 @@
+version: 2
+
+models:
+  - name: bronze_customer_crm
+    description: "Customer data from CRM platform."
+    columns:
+      - name: customer_id
+        description: "Unique customer identifier."
+        data_tests:
+          - not_null
+          - unique
+  - name: bronze_customer_sap
+    description: "Customer data from SAP platform."
+    columns:
+      - name: customer_id
+        description: "Unique customer identifier."
+        data_tests:
+          - not_null
+          - unique
+  - name: bronze_inventory_snapshot_wms
+    description: "Daily inventory snapshot from Warehouse management system."
+    columns:
+      - name: snapshot_date
+        description: "Unique date."
+        data_tests:
+          - not_null
+          - unique
+  - name: bronze_marketing_event
+    description: "Daily inventory snapshot from Marketing platform."
+    columns:
+      - name: event_id
+        description: "Unique marketing event identifier."
+        data_tests:
+          - not_null
+          - unique
+  - name: bronze_product_ecommerce
+    description: "Product data from E-commerce platform."
+    columns:
+      - name: product_id
+        description: "Unique product identifier."
+        data_tests:
+          - not_null
+          - unique
+  - name: bronze_product_sap
+    description: "Product data from SAP platform."
+    columns:
+      - name: sap_product_id
+        description: "Unique product identifier."
+        data_tests:
+          - not_null
+          - unique
+  - name: bronze_warehouse_wms
+    description: "Warehouse data from Warehouse management system."
+    columns:
+      - name: warehouse_code
+        description: "Unique warehouse code."
+        data_tests:
+          - not_null
+          - unique

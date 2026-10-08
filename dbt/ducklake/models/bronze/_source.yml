@@ -1,0 +1,16 @@
+version: 2
+
+sources:
+  - name: source_data
+    loader: duckdb
+    database: lakehouse
+    schema: source_data
+    tables:
+      - name: customer_crm
+      - name: customer_sap
+      - name: order_ecommerce
+      - name: product_ecommerce
+      - name: product_sap
+      - name: inventory_snapshot_wms
+      - name: warehouse_wms
+      - name: marketing_event
