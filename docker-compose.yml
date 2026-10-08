@@ -38,6 +38,14 @@ services:
     image: minio/minio:latest
     container_name: minio
     restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.5"
+          memory: 512M
+        limits:
+          cpus: "1.0"
+          memory: 1G
     ports:
       - 9000:9000
       - 9001:9001
@@ -74,6 +82,14 @@ services:
     image: postgres:16
     container_name: postgres
     restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.5"
+          memory: 512M
+        limits:
+          cpus: "1.0"
+          memory: 1G
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -95,6 +111,9 @@ services:
 
   dbt-duckdb:
     platform: linux/amd64
+    image: dbt-duckdb:${VERSION:-0.1}
+    container_name: dbt-duckdb
+    restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
@@ -110,15 +129,16 @@ services:
         USERNAME: ${USERNAME:-dbtadmin}
         USER_ID: ${USER_ID:-1000}
         GROUP_ID: ${GROUP_ID:-1000}
-    # develop:
-    #   watch:
-    #     - action: sync
-    #       path: ${PWD}/dbt
-    #       target: /home/${USERNAME:-dbtadmin}/dbt
-    image: dbt-duckdb:${VERSION:-0.1}
-    container_name: dbt-duckdb
+    deploy:
+      resources:
+        reservations:
+          cpus: "1.0"
+          memory: 1G
+        limits:
+          cpus: "2.0"
+          memory: 2G
     volumes:
-      - dbt-vol:/home/${USERNAME:-dbtadmin}/dbt
+      - dbt-vol:/home/${USERNAME:-dbtadmin}/dbt/
     environment:
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
