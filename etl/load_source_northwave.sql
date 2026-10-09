@@ -67,7 +67,7 @@ CREATE OR REPLACE TABLE source_data.customer_sap AS
     auto_detect=true
   );
 
-CREATE OR REPLACE TABLE source_data.inventory_snapshot AS
+CREATE OR REPLACE TABLE source_data.inventory_snapshot_wms AS
   SELECT
     *
   FROM read_csv(
@@ -95,7 +95,7 @@ CREATE OR REPLACE TABLE source_data.marketing_event AS
     auto_detect=true
   );
 
-CREATE OR REPLACE TABLE source_data.order AS
+CREATE OR REPLACE TABLE source_data.order_ecommerce AS
   SELECT
     *
   FROM read_csv(
@@ -137,7 +137,7 @@ CREATE OR REPLACE TABLE source_data.product_sap AS
     auto_detect=true
   );
 
-CREATE OR REPLACE TABLE source_data.warehouse AS
+CREATE OR REPLACE TABLE source_data.warehouse_wms AS
   SELECT
     *
   FROM read_csv(
