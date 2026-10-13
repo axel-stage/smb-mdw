@@ -2,6 +2,9 @@
 
 A blueprint for a modern data warehouse (MDW) architecture designed for small and medium-sized businesses (SMBs).
 
+## Project Status
+🚧 **Work in Progress**
+
 ## Overview
 
 **SMB MDW** provides a production-oriented data platform for ingesting, transforming, and serving business data for analytics and reporting.
@@ -53,5 +56,3 @@ The goal is to demonstrate how a modern, maintainable data warehouse can be desi
 ## AI-Assisted Documentation
 Parts of this README were written and refined with the assistance of AI to improve readability, grammar, and spelling. The project concept, design, implementation, and all technical decisions are entirely my own. All AI-assisted content was reviewed, edited, and approved by me to ensure it accurately reflects the project.
 
-## Project Status
-🚧 **Work in Progress**
