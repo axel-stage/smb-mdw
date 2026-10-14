@@ -1,0 +1,20 @@
+SELECT
+    order_number,
+    line_number,
+    customer_id,
+    customer_source_system,
+    product_id,
+    order_date::DATE AS order_date,
+    ship_date::DATE AS ship_date,
+    quantity::INTEGER AS quantity,
+    unit_price::DECIMAL(10, 2) AS unit_price,
+    discount_amount::DECIMAL(10, 2) AS discount_amount,
+    fulfilling_warehouse_code,
+    channel,
+    is_gift,
+    is_promo,
+    payment_method,
+    is_guest_checkout,
+    _source_system,
+    CURRENT_TIMESTAMP AS _insert_at
+FROM {{ ref('bronze_order_ecommerce') }}
