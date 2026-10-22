@@ -1,0 +1,7 @@
+channel_code,channel_name,channel_type,channel_description
+web,Web,both,Website. Used both as a sales channel web orders and as a marketing-delivery channel web push.
+mobile_app,Mobile App,sales,In-app purchases via the iOS/Android mobile app.
+in_store, In-Store, sales,Physical-store point-of-sale transactions.
+email,Email,marketing,Email delivery via the marketing platform.
+sms,SMS,marketing,SMS delivery via the marketing platform.
+app_push,App Push Notification,marketing,Push notification delivered to the mobile app.
