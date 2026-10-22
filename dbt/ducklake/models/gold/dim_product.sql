@@ -1,0 +1,22 @@
+select
+    {{ dbt_utils.generate_surrogate_key(['product_id']) }} as product_key,
+    product_id,
+    sap_product_id,
+    product_name,
+    subcategory,
+    category,
+    department,
+    brand,
+    color,
+    size,
+    unit_price,
+    unit_cost,
+    launch_date,
+    product_status,
+    supplier,
+    '1900-01-01'::date AS effective_from,
+    '9999-12-31'::date AS effective_to,
+    true AS is_current,
+    CURRENT_TIMESTAMP AS _insert_at,
+    CURRENT_TIMESTAMP AS _update_at
+from {{ ref('silver_product') }}
