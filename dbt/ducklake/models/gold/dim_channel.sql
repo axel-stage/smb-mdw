@@ -1,4 +1,4 @@
-select
+SELECT
     {{ dbt_utils.generate_surrogate_key(['channel_code']) }} as channel_key,
     channel_code,
     channel_name,
@@ -6,4 +6,4 @@ select
     channel_description,
     CURRENT_TIMESTAMP AS _insert_at,
     CURRENT_TIMESTAMP AS _update_at
-from {{ ref('silver_marketing_channel') }}
+FROM {{ ref('silver_marketing_channel') }}
