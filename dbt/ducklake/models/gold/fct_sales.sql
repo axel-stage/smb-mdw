@@ -1,20 +1,19 @@
 SELECT
+    -- degenerate dimension
     so.order_number,
     so.line_number,
-
-    COALESCE(dc.customer_key, -1) AS customer_key,
-    COALESCE(dp.product_key, -1) AS product_key,
-    COALESCE(dw.warehouse_key, -1) AS warehouse_key,
-    COALESCE(dch.channel_key, -1) AS channel_key,
-
+    -- foreign key
+    COALESCE(dc.customer_key, '-1') AS customer_key,
+    COALESCE(dp.product_key, '-1') AS product_key,
+    COALESCE(dw.warehouse_key, '-1') AS warehouse_key,
+    COALESCE(dch.channel_key, '-1') AS channel_key,
     CAST(STRFTIME(so.order_date, '%Y%m%d') AS INT) AS order_date_key,
     CAST(STRFTIME(so.ship_date, '%Y%m%d') AS INT) AS ship_date_key,
-
+    -- degenerate dimension
     so.payment_method,
     so.is_gift,
     so.is_promo,
     so.is_guest_checkout,
-
     -- measure
     so.quantity,
     so.unit_price AS unit_price_eur,
@@ -46,15 +45,15 @@ LEFT OUTER JOIN {{ ref('dim_customer') }} AS dc
 LEFT OUTER JOIN {{ ref('dim_product') }} AS dp
     ON
         so.product_id = dp.product_id
-        AND so.order_date BETWEEN dc.effective_form AND dc.effective_to
+        AND so.order_date BETWEEN dp.effective_from AND dp.effective_to
 
 -- SCD1 warehouse lookup
 LEFT OUTER JOIN {{ ref('dim_warehouse') }} AS dw
     ON so.fulfilling_warehouse_code = dw.warehouse_code
 
 -- SCD1 channel lookup
-LEFT OUTER JOIN {{ ref('dim_channnel') }} AS dch
-    ON so.channel = dw.channel_code
+LEFT OUTER JOIN {{ ref('dim_channel') }} AS dch
+    ON so.channel = dch.channel_code
 
 -- enrichment for cost stamping at load time
 LEFT OUTER JOIN {{ ref('silver_product') }} AS sp

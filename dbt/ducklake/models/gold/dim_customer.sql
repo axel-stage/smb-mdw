@@ -1,6 +1,5 @@
 SELECT
     -1 AS customer_key,
-    -1 AS customer_key_2,
     'unknown' AS customer_id,
     'unknown' AS _source_system,
     'unknown' AS customer_name,
@@ -18,7 +17,6 @@ SELECT
 UNION ALL
 select
     {{ dbt_utils.generate_surrogate_key(['_source_system', 'customer_id']) }} AS customer_key,
-    ROW_NUMBER() OVER (ORDER BY _source_system, customer_id) AS customer_key_2,
     customer_id,
     _source_system,
     customer_name

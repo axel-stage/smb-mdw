@@ -1,8 +1,8 @@
 SELECT
     -- foreign keys
     STRFTIME(sis.snapshot_date, '%Y%m%d')::INTEGER AS snapshot_date_key,
-    COALESCE(dp.product_key, -1) AS product_key,
-    COALESCE(dp.warehouse_key, -1) AS warehouse_key,
+    COALESCE(dp.product_key, '-1') AS product_key,
+    COALESCE(dw.warehouse_key, '-1') AS warehouse_key,
     -- measures
     sis.units_on_hand,
     sis.units_reserved,

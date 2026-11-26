@@ -1,11 +1,11 @@
 SELECT
-    -- foreign keys
-    STRFTIME(sme.event_date, '%Y%m%d')::INTEGER AS event_date_key,
-    COALESCE(dc.customer_key, -1) AS customer_key,
-    COALESCE(dca.campaign_key, -1) AS campaign_key,
-    COALESCE(dch.channel_key, -1) AS channel_key,
     -- degenerate dimension
     sme.event_id,
+    -- foreign keys
+    STRFTIME(sme.event_date, '%Y%m%d')::INTEGER AS event_date_key,
+    COALESCE(dc.customer_key, '-1') AS customer_key,
+    COALESCE(dca.campaign_key, '-1') AS campaign_key,
+    COALESCE(dch.channel_key, '-1') AS channel_key,
     -- factless measure
     1 AS event_count,
     -- audit
@@ -25,4 +25,4 @@ LEFT OUTER JOIN {{ ref('dim_campaign') }} AS dca
 
 -- SCD1 channel lookup
 LEFT OUTER JOIN {{ ref('dim_channel') }} AS dch
-    ON sme.channel = dca.channel_code
+    ON sme.channel = dch.channel_code
