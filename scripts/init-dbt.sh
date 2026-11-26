@@ -1,7 +1,7 @@
 
 PYTHON_VERSION=3.14
 PROJECT_PATH=~/projects/smb_mdw
-DBT_PROJECT_NAME=mdw
+DBT_PROJECT_NAME=ducklake
 DBT_PROFILE_NAME=dbt-duckdb
 DBT_ENTITY=trade
 
@@ -21,21 +21,48 @@ then
   mkdir dbt/
 fi
 
-# if [[ ! -d duckdb/ ]]
-# then
-#   echo "create dbt/ folder"
-#   mkdir duckdb/
-# fi
-
 cat <<EOF > ~/.dbt/profiles.yml
-${DBT_PROFILE_NAME}:
+ducklake:
   target: dev
   outputs:
     dev:
       type: duckdb
-      path: "/tmp/sandbox.duckdb"
-      schema: main
+      database: lakehouse
       threads: 4
+
+      extensions:
+        - ducklake
+        - postgres
+        - httpfs
+        - parquet
+
+      secrets:
+        - type: s3
+          key_id: "{{ env_var('MINIO_ACCESS_KEY') }}"
+          secret: "{{ env_var('MINIO_SECRET_KEY') }}"
+          endpoint: "{{ env_var('MINIO_ENDPOINT') }}"
+          use_ssl: false
+          url_style: path
+        - type: postgres
+          name: catalog_credentials
+          host: "{{ env_var('POSTGRES_HOST') }}"
+          port: "{{ env_var('POSTGRES_PORT') }}"
+          database: "{{ env_var('POSTGRES_DB') }}"
+          user: "{{ env_var('POSTGRES_USER') }}"
+          password: "{{ env_var('POSTGRES_PASSWORD') }}"
+        - type: ducklake
+          name: lakehouse
+          metadata_path: ""
+          data_path: "s3://smb-mdw/lakehouse/"
+          metadata_parameters:
+            TYPE: postgres
+            SECRET: catalog_credentials
+            SCHEMA: metadata
+
+      attach:
+        - path: "ducklake:lakehouse"
+          alias: lakehouse
+          is_ducklake: True
 EOF
 
 cat ~/.dbt/profiles.yml
@@ -61,22 +88,34 @@ rm ~/.dbt/profiles.yml
 # project config
 ################
 cat <<EOF > dbt_project.yml
-name: "${DBT_PROJECT_NAME}"
+name: ducklake
 version: "0.1.0"
 config-version: 2
-profile: "${DBT_PROFILE_NAME}"
-model-paths: ["${DBT_PROJECT_NAME}/models"]
-analysis-paths: ["${DBT_PROJECT_NAME}/analyses"]
-test-paths: ["${DBT_PROJECT_NAME}/tests"]
-seed-paths: ["${DBT_PROJECT_NAME}/seeds"]
-macro-paths: ["${DBT_PROJECT_NAME}/macros"]
-snapshot-paths: ["${DBT_PROJECT_NAME}/snapshots"]
+profile: ducklake
+
+model-paths: ["ducklake/models"]
+analysis-paths: ["ducklake/analyses"]
+test-paths: ["ducklake/tests"]
+seed-paths: ["ducklake/seeds"]
+macro-paths: ["ducklake/macros"]
+snapshot-paths: ["ducklake/snapshots"]
+
 clean-targets:
   - "target"
   - "dbt_packages"
   - "logs"
+
 models:
-  +materialized: table
+  ducklake:
+    bronze:
+      +schema: bronze
+      +materialized: table
+    silver:
+      +schema: silver
+      +materialized: table
+    gold:
+      +schema: gold
+      +materialized: table
 EOF
 
 # test
