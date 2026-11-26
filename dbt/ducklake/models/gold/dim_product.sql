@@ -1,5 +1,27 @@
 SELECT
-    {{ dbt_utils.generate_surrogate_key(['product_id']) }} as product_key,
+    -1 AS product_key,
+    'unknown' AS product_id,
+    'unknown' AS sap_product_id,
+    'unknown' AS product_name,
+    NULL AS subcategory,
+    NULL AS category,
+    NULL AS department,
+    NULL AS brand,
+    NULL AS color,
+    NULL AS size,
+    NULL AS unit_price,
+    NULL AS unit_cost,
+    NULL AS launch_date,
+    NULL AS product_status,
+    NULL AS supplier,
+    '1900-01-01'::date AS effective_from,
+    '9999-12-31'::date AS effective_to,
+    true AS is_current,
+    CURRENT_TIMESTAMP AS _insert_at,
+    CURRENT_TIMESTAMP AS _update_at
+UNION ALL
+SELECT
+    {{ dbt_utils.generate_surrogate_key(['product_id']) }} AS product_key,
     product_id,
     sap_product_id,
     product_name,

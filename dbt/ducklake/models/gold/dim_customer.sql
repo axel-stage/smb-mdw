@@ -12,7 +12,7 @@ SELECT
     NULL AS signup_date,
     '1900-01-01'::date AS effective_from,
     '9999-12-31'::date AS effective_to,
-    TRUE AS is_current,
+    true AS is_current,
     CURRENT_TIMESTAMP AS _insert_at,
     CURRENT_TIMESTAMP AS _update_at
 UNION ALL
